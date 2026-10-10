@@ -1,6 +1,6 @@
-# WakeNet9Arduino
+# WakeNet9Simplifier
 
-Version **2.2.0**
+Version **2.2.1**
 
 An Arduino-style wrapper for Espressif ESP-SR WakeNet detection, targeting ESP32-S3 and the `wn9_hiesp` wake word “Hi ESP”.
 
@@ -63,9 +63,13 @@ Serial Monitor commands: `ON`, `OFF`, `LOG ON`, `LOG OFF`, `STATUS`, `HELP`.
 
 ## Installation
 
-Arduino IDE → Sketch → Include Library → Add .ZIP Library… and select a release ZIP. After the Arduino Library Registry accepts and indexes this repository, install through Library Manager by searching for `WakeNet9Arduino`.
+Arduino IDE → Sketch → Include Library → Add .ZIP Library… and select a release ZIP. After the Arduino Library Registry accepts and indexes this repository, install through Library Manager by searching for `WakeNet9Simplifier`.
 
 ## Release notes
+
+### 2.2.1
+- Adds a ready-to-upload `HiESP_WakeWord` example sketch.
+- Uses a registry-facing library name without the redundant word “Arduino”.
 
 ### 2.2.0
 - Exposes INMP441 BCLK, WS, SD and channel selection through a configuration struct in the main sketch.
