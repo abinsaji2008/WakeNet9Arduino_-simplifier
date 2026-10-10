@@ -2,26 +2,23 @@
 
 Version **2.2.0**
 
-An Arduino-style wrapper for Espressif ESP-SR WakeNet wake-word detection on supported ESP32 devices, designed for the ESP32-S3 and the `wn9_hiesp` (“Hi ESP”) model.
+An Arduino-style wrapper for Espressif ESP-SR WakeNet detection, targeting ESP32-S3 and the `wn9_hiesp` wake word “Hi ESP”.
 
-## Important requirements
+## Requirements
 
-- A compatible ESP32 Arduino core / ESP-SR integration is required.
-- The selected wake-word model must be available in the ESP-SR model partition named `model` (for example, `wn9_hiesp`).
-- This library does not include the proprietary/model binary itself, and installing it does not automatically flash the model partition.
-- Hardware and Arduino-core compatibility must be tested on the specific ESP32-S3 board and ESP-SR version.
+- Compatible ESP32 Arduino core and ESP-SR headers/libraries.
+- ESP-SR model partition named `model` containing the `wn9_hiesp` model. This library does not include the model binary or automatically flash model partitions.
+- 16 kHz audio. This implementation expects 32-bit I2S capture transformed to 16-bit samples by `ESP_I2S`.
 
-## Configurable INMP441 microphone pins
-
-Choose the pins in your main sketch. Example for an ESP32-S3 with an INMP441:
+## Configure INMP441 pins in your main sketch
 
 ```cpp
 #include <WakeNet9Arduino.h>
 
-#define MIC_SD_PIN   16  // INMP441 SD -> ESP32 data-in
-#define MIC_SCK_PIN  17  // INMP441 SCK/BCLK
-#define MIC_WS_PIN   15  // INMP441 WS/LRCLK
-#define MIC_USE_LEFT_CHANNEL true  // L/R wired to GND means left slot
+#define MIC_SD_PIN   16
+#define MIC_SCK_PIN  17
+#define MIC_WS_PIN   15
+#define MIC_USE_LEFT_CHANNEL true
 
 WakeNet9Arduino wakeNet;
 
@@ -43,7 +40,7 @@ void setup() {
 
   wakeNet.setWakeWordCallback(onWakeWord);
   if (!wakeNet.begin(config)) {
-    Serial.println("WakeNet start failed");
+    Serial.println("WakeNet initialization failed");
   }
 }
 
@@ -52,22 +49,25 @@ void loop() {
 }
 ```
 
-The example shows the intended API. Confirm that the current library source matches these member names and functions before compiling; the repository must contain the actual implementation files as well as this metadata.
+Pin definitions are examples: choose GPIOs appropriate for your board. The same constants can be shared with a streaming library so wake-word and transcription capture use the same microphone pins.
 
-## Pin configuration
+## API
 
-- `bclkPin`: INMP441 SCK/BCLK
-- `wsPin`: INMP441 WS/LRCLK
-- `dataPin`: INMP441 SD connected to ESP32 I2S input
-- `useLeftChannel`: choose the slot matching the INMP441 L/R connection
-- `sampleRate`: normally 16000 Hz for WakeNet models
+- `WakeNet9Arduino::Config`
+- `begin(config)`, `end()`
+- `setWakeWordCallback(callback)`
+- `setSerialOutput(enabled)`
+- `handleSerial()`
+
+Serial Monitor commands: `ON`, `OFF`, `LOG ON`, `LOG OFF`, `STATUS`, `HELP`.
 
 ## Installation
 
-Arduino IDE → Sketch → Include Library → Add .ZIP Library… and select the release ZIP, or search for `WakeNet9Arduino` in Library Manager after its registry entry has been accepted and indexed.
+Arduino IDE → Sketch → Include Library → Add .ZIP Library… and select a release ZIP. After the Arduino Library Registry accepts and indexes this repository, install through Library Manager by searching for `WakeNet9Arduino`.
 
 ## Release notes
 
 ### 2.2.0
-- Documents main-sketch configurable INMP441 pin assignments.
-- Declares the expected ESP32 architecture and the separate model-partition requirement.
+- Exposes INMP441 BCLK, WS, SD and channel selection through a configuration struct in the main sketch.
+- Wraps ESP-SR's native WakeNet interface.
+- Requires the external `model` partition with `wn9_hiesp`.
